@@ -6,14 +6,14 @@ import java.time.LocalDate;
 public class Episodio {
     private Integer temporada;
     private String titulo;
-    private Integer numeroDelEpisodio;
+    private Integer numeroEpisodio;
     private Double evaluacion;
     private LocalDate fechaDeLanzamiento;
 
     public Episodio(Integer numero, DatosEpisodio d) {
         this.temporada = numero;
         this.titulo = d.titulo();
-        this.numeroDelEpisodio = d.numeroDelEpisodio();
+        this.numeroEpisodio = d.numeroEpisodio();
         try {
             this.evaluacion = Double.valueOf(d.evaluacion());
         } catch (NumberFormatException e) {
@@ -42,12 +42,12 @@ public class Episodio {
         this.titulo = titulo;
     }
 
-    public Integer getNumero() {
-        return numeroDelEpisodio;
+    public Integer getNumeroEpisodio() {
+        return numeroEpisodio;
     }
 
-    public void setNumero(Integer numeroDelEpisodio) {
-        this.numeroDelEpisodio = numeroDelEpisodio;
+    public void setNumeroEpisodio(Integer numeroDelEpisodio) {
+        this.numeroEpisodio = numeroDelEpisodio;
     }
 
     public Double getEvaluacion() {
@@ -70,7 +70,7 @@ public class Episodio {
     public String toString() {
         return "temporada=" + temporada +
                 ", titulo='" + titulo + '\'' +
-                ", numeroDelEpisodio=" + numeroDelEpisodio +
+                ", numeroDelEpisodio=" + numeroEpisodio +
                 ", evaluacion=" + evaluacion +
                 ", fechaDeLanzamiento=" + fechaDeLanzamiento;
     }
