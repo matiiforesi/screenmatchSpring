@@ -3,6 +3,7 @@ package com.aluracursos.screenmatch.principal;
 import com.aluracursos.screenmatch.model.DatosSerie;
 import com.aluracursos.screenmatch.model.DatosTemporadas;
 import com.aluracursos.screenmatch.model.Serie;
+import com.aluracursos.screenmatch.repository.SerieRepository;
 import com.aluracursos.screenmatch.service.ConsumoAPI;
 import com.aluracursos.screenmatch.service.ConvierteDatos;
 
@@ -14,10 +15,16 @@ public class Principal {
     private ConsumoAPI consumoApi = new ConsumoAPI();
 
     private final String URL_BASE = "https://www.omdbapi.com/?t=";
-    private final String API_KEY = "&apikey=8e33e72f"; // mas adelante se vuelve variable de ambiente
+    private final String API_KEY = "${OMDB_APIKEY}"; // mas adelante se vuelve variable de ambiente
 
     private ConvierteDatos conversor = new ConvierteDatos();
     private List<DatosSerie> datosSeries = new ArrayList<>();
+
+    private SerieRepository repository;
+
+    public Principal(SerieRepository repository) {
+        this.repository = repository;
+    }
 
     public void muestraElMenu() {
         var opcion = -1;
@@ -25,7 +32,7 @@ public class Principal {
             var menu = """
                     1 - Buscar series
                     2 - Buscar episodios
-                    3 - Mostrar serie buscada
+                    3 - Mostrar series previamente buscadas
                     0 - Salir
                     """;
 
@@ -78,15 +85,19 @@ public class Principal {
 
     private void buscarSerieWeb() {
         DatosSerie datos = getDatosSerie();
-        datosSeries.add(datos);
+//        datosSeries.add(datos);
+        Serie serie = new Serie(datos);
+        repository.save(serie);
         System.out.println(datos);
     }
 
     private void mostrarSeriesBuscadas() {
-        List<Serie> series = new ArrayList<>();
-        series = datosSeries.stream()
-                .map(d -> new Serie(d))
-                .collect(Collectors.toList());
+//        List<Serie> series = new ArrayList<>();
+//        series = datosSeries.stream()
+//                .map(d -> new Serie(d))
+//                .collect(Collectors.toList());
+
+        List<Serie> series = repository.findAll();
 
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))
