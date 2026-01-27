@@ -1,9 +1,6 @@
 package com.aluracursos.screenmatch.principal;
 
-import com.aluracursos.screenmatch.model.DatosSerie;
-import com.aluracursos.screenmatch.model.DatosTemporadas;
-import com.aluracursos.screenmatch.model.Episodio;
-import com.aluracursos.screenmatch.model.Serie;
+import com.aluracursos.screenmatch.model.*;
 import com.aluracursos.screenmatch.repository.SerieRepository;
 import com.aluracursos.screenmatch.service.ConsumoAPI;
 import com.aluracursos.screenmatch.service.ConvierteDatos;
@@ -34,9 +31,13 @@ public class Principal {
         var opcion = -1;
         while (opcion != 0) {
             var menu = """
-                    1 - Buscar series
-                    2 - Buscar episodios
-                    3 - Mostrar series previamente buscadas
+                    1 - Mostrar series
+                    2 - Mostrar episodios por serie
+                    3 - Mostrar busquedas previas
+                    4 - Buscar series segun titulo
+                    5 - Mostrar top 5 mejores series
+                    6 - Buscar series por categoria/genero
+                    7 - Mostar series filtradas
                     0 - Salir
                     """;
 
@@ -54,6 +55,18 @@ public class Principal {
                 case 3:
                     mostrarSeriesBuscadas();
                     break;
+                case 4:
+                    buscarSeriesPorTitulo();
+                    break;
+                case 5:
+                    top5MejoresSeries();
+                    break;
+                case 6:
+                    buscarSeriesPorCategoria();
+                    break;
+                case 7:
+                    filtrarSeriesPorTemporadaYEvaluacion();
+                    break;
                 case 0:
                     System.out.println("Cerrando la aplicacion...");
                     break;
@@ -64,7 +77,7 @@ public class Principal {
     }
 
     private DatosSerie getDatosSerie() {
-        System.out.println("Escriba el nombre de la serie que deseas buscar: ");
+        System.out.println("Escriba el nombre de la serie para ver sus datos: ");
         var nombreSerie = teclado.nextLine();
         var json = consumoApi.obtenerDatos(URL_BASE + nombreSerie.replace(" ", "+") + API_KEY);
         System.out.println(json);
@@ -125,5 +138,42 @@ public class Principal {
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
+    }
+
+
+    private void buscarSeriesPorTitulo() {
+        System.out.println("Escriba el nombre de la serie que desea buscar: ");
+        var nombreSerie = teclado.nextLine();
+        Optional<Serie> serieBuscada = repository.findByTituloContainsIgnoreCase(nombreSerie);
+
+        if (serieBuscada.isPresent()) {
+            System.out.println("La serie buscada es: " + serieBuscada.get());
+        } else {
+            System.out.println("No se encontraron resultados.");
+        }
+    }
+
+    private void top5MejoresSeries() {
+        List<Serie> topSeries = repository.findTop5ByOrderByEvaluacionDesc();
+        topSeries.forEach(s -> System.out.println("Serie: " + s.getTitulo() + " - Evaluacion: " + s.getEvaluacion()));
+    }
+
+    private void buscarSeriesPorCategoria() {
+        System.out.println("Escriba la categoria/genero de la seria a buscar: ");
+        var genero = teclado.nextLine();
+        var categoria = Categoria.fromEspanol(genero);
+        List<Serie> seriesPorCategoria = repository.findByGenero(categoria);
+        System.out.println("Las series de la categoria" + genero + " son: ");
+        seriesPorCategoria.forEach(System.out::println);
+    }
+
+    private void filtrarSeriesPorTemporadaYEvaluacion() {
+        System.out.println("Escriba la temporada a buscar: ");
+        var temporada = teclado.nextInt();
+        System.out.println("Escriba la evaluacion minima a buscar: ");
+        var evaluacion = teclado.nextDouble();
+        List<Serie> seriesFiltradas = repository.findByTotalTemporadasLessThanEqualAndEvaluacionGreaterThanEqual(temporada, evaluacion);
+        System.out.println("Series filtradas: ");
+        seriesFiltradas.forEach(s -> System.out.println(s.getTitulo() + " - " + s.getEvaluacion()));
     }
 }
