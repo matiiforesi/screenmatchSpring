@@ -1,7 +1,7 @@
 package com.aluracursos.screenmatch.model;
 
 public enum Categoria {
-    ACCION("Action", "Accion"), ROMANCE("Romance", "Romance"), COMEDIA("Comedy", "Comedia"), CRIMEN("Crime", "Crimen"), DRAMA("Drama", "Drama");
+    ACCION("Action", "Acción"), ROMANCE("Romance", "Romance"), COMEDIA("Comedy", "Comedia"), CRIMEN("Crime", "Crimen"), DRAMA("Drama", "Drama");
 
     private String categoriaOmdb;
     private String categoriaEspanol;
